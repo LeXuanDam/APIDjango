@@ -34,14 +34,14 @@ class AuthorSerializer(serializers.Serializer):
         Update and return an existing `Post` instance, given the validated data.
         """
         instance.name = validated_data.get('name', instance.name)
-        instance.email = validated_data.get('email', instance.email)
+        # instance.email = validated_data.get('email', instance.email)
         instance.save()
         return instance
 
 class PostSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    author_id = serializers.IntegerField()
-    category_id = serializers.IntegerField()
+    author_id = serializers.IntegerField(required=False)
+    category_id = serializers.IntegerField(required=False)
     name = serializers.CharField(max_length=100)
     file = serializers.CharField(max_length=100, default='')
     def create(self, validated_data):
@@ -54,8 +54,8 @@ class PostSerializer(serializers.Serializer):
         """
         Update and return an existing `Post` instance, given the validated data.
         """
-        instance.author_id = validated_data.get('user_id', instance.user_id)
-        instance.category_id = validated_data.get('category_id', instance.code)
+        instance.author_id = validated_data.get('author_id', instance.author_id)
+        instance.category_id = validated_data.get('category_id', instance.category_id)
         instance.name = validated_data.get('name', instance.name)
         instance.file = validated_data.get('file', instance.file)
         instance.save()
