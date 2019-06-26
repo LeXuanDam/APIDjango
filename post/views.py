@@ -2,11 +2,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from post.models import Post, Author, Category
-from post.serializers import PostSerializer, CategorySerializer, AuthorSerializer, GetPostSerializer
+from post.serializers import PostSerializer, CategorySerializer, AuthorSerializer
 from django.core.files.storage import FileSystemStorage
 from django.core import serializers
 import json
-
 
 @api_view(['GET', 'POST'])
 
@@ -17,11 +16,11 @@ def list(request):
 
     if request.method == 'GET':
         posts = Post.objects.all()
-        serializer = GetPostSerializer(posts, many=True)
+        serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
-        request = addAuthor(request)
-        request = uploadFile(request)
+        link_file = uploadFile(request.FILES['file'])
+        request.data["file"] = link_file
         post = PostSerializer(data=request.data)
         if post.is_valid():
             post.save()
@@ -39,11 +38,11 @@ def detail(request, pk):
         return Response(response, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = GetPostSerializer(post)
+        serializer = PostSerializer(post)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        uploadFile(request)
+        request = uploadFile(request)
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -55,19 +54,7 @@ def detail(request, pk):
         respone = {"message": "bạn đã xóa thành công bài post id = " + str(pk)}
         return Response(respone, status=status.HTTP_204_NO_CONTENT)
 
-def addAuthor(request):
-    dataAuthor = {
-        'name': request.data['authorName']
-    }
-    author = AuthorSerializer(data=dataAuthor)
-    if author.is_valid():
-        author.save()
-        request.data['author_id'] = author.data['id']
-    return request
-
-def uploadFile(request):
-    uploaded_file = request.FILES['file']
+def uploadFile(uploaded_file):
     file = FileSystemStorage()
     name = file.save(uploaded_file.name, uploaded_file)
-    request.data['file'] = file.url(name)
-    return request
+    return name

@@ -14,14 +14,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from post import views as postViews
 from category import views as categoryViews
+from author import views as authorViews
+from .router import router
+from rest_framework.response import Response
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('post', postViews.list),
     path('post/<int:pk>', postViews.detail),
     path('category', categoryViews.list),
     path('category/<int:pk>', categoryViews.detail),
+    path('author', authorViews.list),
+    path('author/<int:pk>', authorViews.detail),
+    path('api/', include(router.urls))
 ]
+def error404():
+    response = {"message":"trang khong ton tai"}
+    return Response(response)
+
+handler404 = error404()
 

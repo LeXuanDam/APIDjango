@@ -26,8 +26,7 @@ SECRET_KEY = 'ob4u6nj(f!@n0te^d)mirg%3bh-$r_e-%cff16acv=szeomr*7'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '192.168.0.203',
-    '127.0.0.1',
+    "*"
 ]
 
 # Application definition
@@ -43,6 +42,8 @@ INSTALLED_APPS = [
     'post',
     'safedelete',
     'category',
+    'author',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'APIDjango.urls'
@@ -128,9 +130,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'snippets/static')
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'post')
+]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
