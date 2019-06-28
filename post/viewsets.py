@@ -15,8 +15,12 @@ class PostViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
-        link_file = uploadFile(request.FILES['file'])
-        request.data["file"] = link_file
+        request.POST._mutable = True
+        try:
+            link_file = uploadFile(request.FILES['file'])
+            request.data["file"] = link_file
+        except:
+            request.data["file"] = ""
         post = PostSerializer(data=request.data)
         if post.is_valid():
             post.save()
@@ -24,13 +28,16 @@ class PostViewSet(viewsets.ViewSet):
         return Response(post.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
+        request.POST._mutable = True
         post = checkPostExists(pk)
         if post == None:
             response = {"message": "post not exists"}
             return Response(response, status=status.HTTP_404_NOT_FOUND)
-        print(request)
-        link_file = uploadFile(request.FILES['file'])
-        request.data["file"] = link_file
+        try:
+            link_file = uploadFile(request.FILES['file'])
+            request.data["file"] = link_file
+        except:
+            request.data["file"] = ""
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
